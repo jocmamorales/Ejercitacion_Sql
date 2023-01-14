@@ -1,4 +1,3 @@
---https://www.ingenieriasystems.com/2015/05/Ejercicios-de-procedimientos-almacenados-en-SQL-Server-1-de-2.html
 ---CONSULTAS DE SELECCION
 --2. Mostrar el apellido, oficio, salario, salario anual, 
 --con las dos extras () para aquellos empleados con comisión mayor de 100.000.
@@ -84,7 +83,7 @@ select distinct p.T as turno, p.Apellido as apellido from Plantilla p order by p
 select distinct d.Especialidad, d.Apellido from Doctor d order by d.Especialidad, d.Apellido
 
 
----PROCEDURE
+---STORE PROCEDURE
 --1) Sacar todos los empleados que se dieron de alta entre una determinada fecha inicial 
 --y fecha final y que pertenecen a un determinado departamento.
 
@@ -102,7 +101,7 @@ BEGIN
     WHERE fecha_alt BETWEEN @fecha_inicial AND @fecha_final
     AND Dept_No= @departamento;
 END
-
+--Prueba
 EXEC obtener_empleados_por_fecha_y_departamento '01/01/1965','01/01/1985',20		
 
 
@@ -126,7 +125,7 @@ INSERT INTO emp (EMP_NO,Apellido, Oficio, Dir, Fecha_Alt,Salario,Comision,Dept_N
 VALUES (@EMP_NO, @Apellido, @Oficio, @Dir, @Fecha_Alt,@Salario,@Comision,@Dept_No)
 
 END
-
+--Prueba
 EXEC insertar_empleado 7895,'SUAREZ','EMPLEADO',0,'26/05/2015',16000,0,20
 
 SELECT * FROM EMP
@@ -151,7 +150,7 @@ begin
  
    
 END
-
+--Prueba
 exec NUMEMP_DEPT 20
 select * from Dept 
 select * from Emp where Dept_No=10
@@ -179,7 +178,7 @@ begin
  
    
 END
-
+--Prueba
 EXEC PERSONADEPT 'CONTABILIDAD'
 
 select * from Emp where Dept_No=10
@@ -201,7 +200,7 @@ begin
 		where e.Apellido=@Apellido
 			   		 	  
 end
-
+--Prueba
 exec Oficio_Por_APELLIDO 'Rey'
 --6) Igual que el anterior, pero si no le pasamos ningún valor, mostrará los datos de todos los empleados
 --que empiezan con letra A.
@@ -220,7 +219,7 @@ begin
 		where e.Apellido like @Apellido
 		
 end
-
+--Prueba
 exec Oficio_Por_APELLIDO 
 ----------
 --6 BIS) Igual que el anterior, pero si no le pasamos ningún valor, mostrará los datos de todos los empleados
@@ -231,7 +230,7 @@ CREATE PROCEDURE OFICIOSALARIO
 @PAPELLIDO NVARCHAR(20) ='%' AS
 SELECT OFICIO, SALARIO, COMISION FROM EMP WHERE APELLIDO LIKE @PAPELLIDO
 
-
+--Prueba
 EXEC OFICIOSALARIO 
 drop procedure OFICIOSALARIO
 
@@ -255,7 +254,7 @@ BEGIN
 		where e.Apellido like '%'+@apellido+'%'
 
 END
-
+--Prueba
 exec MOSTRAR_SALARIO 'r'
 
 --7 bis mostrar el apellido, salario,oficio y nombre del departamento de todos los empleados aunque No tengan departamento debo mostrar un mensaje no tiene departamento
@@ -273,7 +272,7 @@ ON E.DEPT_NO = D.DEPT_NO
 select * from Plantilla
 select * from Dept
 select * from Emp
-
+--solucion
 go
 delete procedure EmpXdept_antes_2018
 (
@@ -291,11 +290,11 @@ begin
 
 
 end 
-
+--Prueba
 exec emEmpXdept_antes_2018 20
 
 
-
+--Otra opcion de 1981
 alter procedure empleados
 as
 SELECT Emp.Apellido, Emp.Fecha_Alt, Dept.Loc
@@ -303,15 +302,8 @@ FROM Emp INNER JOIN
 Dept ON Emp.Dept_No = Dept.Dept_No
 where Fecha_Alt like '%1981%'
 
+--Prueba
 exec empleados
 
 
 
----9. Crear un procedimiento almacenado que permita insertar un nuevo
---departamento.
---10. Crear un procedimiento que recupere el promedio de edad de las personas por
---cada departamento.
---11. Crear un procedimiento para devolver el apellido, oficio y salario, pasándole
---como parámetro el número del empleado.
---12. Crear un procedimiento almacenado para dar de baja a un empleado
----pasándole como parámetro su apellido
