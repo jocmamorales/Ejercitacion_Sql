@@ -393,3 +393,34 @@ select * from Emp
 exec Eliminar_Emp MUÑOZ
 INSERT INTO Emp values (7934,	'MUÑOZ',	'EMPLEADO',	7782,1982/06/23 ,	169000.00,	0.00,	10)
 
+--13 Crear un procedimiento que recupere el número departamento, el nombre y número de empleados, 
+--dándole como valor el nombre del departamento, si el nombre introducido no es válido,
+--mostraremos un mensaje informativo comunicándolo.
+select * from Emp
+
+go
+create procedure Cant_Emp_xNombreDepto(
+@DNombre varchar (50)
+)
+as 
+begin
+		DECLARE @DeptNombre varchar (50)
+		set @DeptNombre=NULL
+		
+		select @DeptNombre = DNombre from Dept where DNombre= @DNombre
+
+		IF (@DeptNombre is null)
+		print 'El departamento ingresado no existe'
+
+		ELSE
+		begin
+		select d.DNombre as 'Departamento', e.Dept_No as 'Numero de Departamento',count (e.Emp_No) as 'Cantidad de empleados' from Emp e
+		inner join Dept d on e.Dept_No=d.Dept_No
+		where d.DNombre=@DNombre
+		group by d.DNombre,e.Dept_No
+		end
+
+end
+
+exec Cant_Emp_xNombreDepto CONTABILIDAD
+exec Cant_Emp_xNombreDepto LIMPIEZA
