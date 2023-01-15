@@ -1,18 +1,18 @@
 ---CONSULTAS DE SELECCION
 --2. Mostrar el apellido, oficio, salario, salario anual, 
---con las dos extras () para aquellos empleados con comisiÛn mayor de 100.000.
+--con las dos extras () para aquellos empleados con comisi√≥n mayor de 100.000.
 select * from Emp
 select e.Apellido,e.Oficio,e.Salario, e.Salario*14 as anual from Emp e where e.Comision > 100000
 
 
---3. IdÈntico del anterior, pero para aquellos empleados que su salario anual con extras supere los 2200000
+--3. Id√©ntico del anterior, pero para aquellos empleados que su salario anual con extras supere los 2200000
 select e.Apellido,e.Oficio,e.Salario, e.Salario*14 as anual from Emp e where e.Salario*14 >220000
 
---4. IdÈntico del anterior, pero para aquellos empleados que sumen entre salario anual con extras y comisiÛn los 3 millones.
+--4. Id√©ntico del anterior, pero para aquellos empleados que sumen entre salario anual con extras y comisi√≥n los 3 millones.
 select e.Apellido,e.Oficio,e.Salario, e.Salario*14 as anual from Emp e where e.Salario*14+e.Salario >3000000
 
 --5. Mostrar todos los datos de empleados ordenados por departamento 
---y dentro de este por oficio para tener una visiÛn jer·rquica.
+--y dentro de este por oficio para tener una visi√≥n jer√°rquica.
 select * from Emp e order by e.Dept_No, e.Oficio
 
 --6. Mostrar todas las salas para el hospital 45.
@@ -21,15 +21,15 @@ select * from Sala where Hospital_Cod=45
 --7. Mostrar todos los enfermos nacidos antes de 1970.
 select * from Enfermo where Fecha_Nac < ('1970-1-1')		 --year (Fecha_Nac)<1970 MAL
 
---8. Igual que el anterior, para los nacidos antes de 1970 ordenados por n˙mero de inscripciÛn descendente
+--8. Igual que el anterior, para los nacidos antes de 1970 ordenados por n√∫mero de inscripci√≥n descendente
 select * from Enfermo where Fecha_Nac < ('1970-1-1') ORDER BY Inscripcion DESC
 
---9. Listar todos los datos de la plantilla del hospital del turno de maÒana
+--9. Listar todos los datos de la plantilla del hospital del turno de ma√±ana
 select * from Plantilla where T like 'M'
 --10. Idem del turno de noche.
 SELECT * FROM Plantilla where T='N'
 
---11. Visualizar los empleados de la plantilla del turno de maÒana que tengan un salario entre 200000 y 225000.
+--11. Visualizar los empleados de la plantilla del turno de ma√±ana que tengan un salario entre 200000 y 225000.
 select * from Plantilla where T='M' AND Salario between 200000 and 225000
 --12. Visualizar los empleados de la tabla emp que no se dieron de alta entre el 01/01/80 y el 12/12/82
 
@@ -44,10 +44,10 @@ SELECT * FROM Emp where Fecha_Alt> '1985-7-1'
 
 --15. Lo mismo que en el ejercicio 14 pero con salario entre 150000 y 400000.
 SELECT * FROM Emp where Fecha_Alt> '1985-7-1' and Salario between 150000 and 400000
---16. Igual que en el ejercicio 15, pero tambiÈn incluimos aquellos que no siendo analista pertenecen al departamento 20.
+--16. Igual que en el ejercicio 15, pero tambi√©n incluimos aquellos que no siendo analista pertenecen al departamento 20.
 SELECT * FROM Emp where Fecha_Alt> '1985-7-1' and Salario between 150000 and 400000 OR (Oficio <> 'ANALISTA' AND Dept_No = 20) 
---17. Mostrar aquellos empleados cuyo apellido termine en ëZí ordenados por departamento, 
---y dentro de este por antig¸edad.
+--17. Mostrar aquellos empleados cuyo apellido termine en ‚ÄòZ‚Äô ordenados por departamento, 
+--y dentro de este por antig√ºedad.
 SELECT * FROM Emp E WHERE E.Apellido LIKE '%Z' ORDER BY Dept_No, Fecha_Alt Asc
 --18. De los empleados del ejercicio 17 quitar aquellos que superen los 200000 mensuales.
 SELECT * FROM Emp E WHERE e.Salario >200000 and E.Apellido LIKE '%Z' ORDER BY Dept_No, Fecha_Alt Asc 
@@ -55,10 +55,10 @@ SELECT * FROM Emp E WHERE e.Salario >200000 and E.Apellido LIKE '%Z' ORDER BY De
 
 --19. Mostrar todos los empleados cuyo oficio no sea analista.
 select * from Emp where Oficio <> 'ANALISTA'
---20. Igual que el ejercicio 19, pero mostr·ndolos de forma que se aprecien las diferencias de salario dentro de cada oficio.
+--20. Igual que el ejercicio 19, pero mostr√°ndolos de forma que se aprecien las diferencias de salario dentro de cada oficio.
 select * from Emp where Oficio <> 'ANALISTA'
 ORDER BY Oficio , salario desc
---21. Del ejercicio 20, nos quedamos solo con aquellos cuyo n˙mero de empleado no este entre 7600 y 7900.
+--21. Del ejercicio 20, nos quedamos solo con aquellos cuyo n√∫mero de empleado no este entre 7600 y 7900.
 select * from Emp where Oficio <> 'ANALISTA' and Emp_No not between 7600 and 7900
 ORDER BY Oficio , salario desc
 
@@ -66,7 +66,7 @@ ORDER BY Oficio , salario desc
 select distinct e.Oficio from Emp e
 --23. Mostrar los distintos nombres de sala.
 select distinct s.Nombre from Sala s
---24. Mostrar que personal ìNo Interinoî existe en cada sala de cada hospital, ordenado por hospital y sala.
+--24. Mostrar que personal ‚ÄúNo Interino‚Äù existe en cada sala de cada hospital, ordenado por hospital y sala.
 select * from Sala
 select * from Plantilla where Funcion <>'INTERINO' ORDER BY Hospital_Cod, Sala_Cod ASC
 
@@ -79,7 +79,7 @@ select distinct e.S from Enfermo e
 --27. Indicar los distintos turnos de la plantilla del hospital, ordenados por turno y por apellido.
 select distinct p.T as turno, p.Apellido as apellido from Plantilla p order by p.T, p.Apellido asc
 
---28. Seleccionar las distintas especialidades que ejercen los mÈdicos, ordenados por especialidad y apellido.
+--28. Seleccionar las distintas especialidades que ejercen los m√©dicos, ordenados por especialidad y apellido.
 select distinct d.Especialidad, d.Apellido from Doctor d order by d.Especialidad, d.Apellido
 
 
@@ -130,7 +130,7 @@ EXEC insertar_empleado 7895,'SUAREZ','EMPLEADO',0,'26/05/2015',16000,0,20
 
 SELECT * FROM EMP
 
---3) Crear un procedimiento que recupere el nombre, n˙mero y n˙mero de personas a partir del n˙mero de departamento.
+--3) Crear un procedimiento que recupere el nombre, n√∫mero y n√∫mero de personas a partir del n√∫mero de departamento.
 
 go
 CREATE PROCEDURE NUMEMP_DEPT
@@ -157,7 +157,7 @@ select * from Emp where Dept_No=10
 
 
 --4) Crear un procedimiento igual que el anterior, 
---pero que recupere tambiÈn las personas que trabajan en dicho departamento, pas·ndole como par·metro el nombre.
+--pero que recupere tambi√©n las personas que trabajan en dicho departamento, pas√°ndole como par√°metro el nombre.
 go
 CREATE PROCEDURE PERSONADEPT
 (
@@ -182,7 +182,7 @@ END
 EXEC PERSONADEPT 'CONTABILIDAD'
 
 select * from Emp where Dept_No=10
---5) Crear procedimiento para devolver salario, oficio y comisiÛn, pas·ndole el apellido.
+--5) Crear procedimiento para devolver salario, oficio y comisi√≥n, pas√°ndole el apellido.
 select * from Plantilla
 select * from Dept
 select * from Emp
@@ -202,7 +202,7 @@ begin
 end
 --Prueba
 exec Oficio_Por_APELLIDO 'Rey'
---6) Igual que el anterior, pero si no le pasamos ning˙n valor, mostrar· los datos de todos los empleados
+--6) Igual que el anterior, pero si no le pasamos ning√∫n valor, mostrar√° los datos de todos los empleados
 --que empiezan con letra A.
 go
 ALTER procedure Oficio_Por_APELLIDO (
@@ -222,7 +222,7 @@ end
 --Prueba
 exec Oficio_Por_APELLIDO 
 ----------
---6 BIS) Igual que el anterior, pero si no le pasamos ning˙n valor, mostrar· los datos de todos los empleados
+--6 BIS) Igual que el anterior, pero si no le pasamos ning√∫n valor, mostrar√° los datos de todos los empleados
 
 
 go
@@ -236,7 +236,7 @@ drop procedure OFICIOSALARIO
 
 --7) Crear un procedimiento para mostrar el salario, oficio, apellido
 --y nombre del departamento de todos los empleados que contengan en su apellido el valor
---que le pasemos como par·metro.
+--que le pasemos como par√°metro.
 
 GO
 CREATE PROCEDURE MOSTRAR_SALARIO (
@@ -267,7 +267,7 @@ LEFT JOIN DEPT AS D
 ON E.DEPT_NO = D.DEPT_NO
 
 
---8. Obtener todos los empleados que se dieron de alta antes del aÒo 2018 y que
+--8. Obtener todos los empleados que se dieron de alta antes del a√±o 2018 y que
 --pertenecen a un determinado departamento.
 select * from Plantilla
 select * from Dept
@@ -357,8 +357,8 @@ group by d.DNombre
 end 
 ---prueba
 exec Prom_Emp_Antigue
---11. Crear un procedimiento para devolver el apellido, oficio y salario, pas·ndole
---como par·metro el n˙mero del empleado.
+--11. Crear un procedimiento para devolver el apellido, oficio y salario, pas√°ndole
+--como par√°metro el n√∫mero del empleado.
 select * from Emp
 
 -- solucion
@@ -377,7 +377,7 @@ end
 exec Datos_Emple_Xnum 7119
 
 --12. Crear un procedimiento almacenado para dar de baja a un empleado
----pas·ndole como par·metro su apellido
+---pas√°ndole como par√°metro su apellido
 go
 create procedure Eliminar_Emp
 (@Apellido varchar (50)
@@ -390,5 +390,37 @@ end
 
 --prueba
 select * from Emp
-exec Eliminar_Emp MU—OZ
-INSERT INTO Emp values (7934,	'MU—OZ',	'EMPLEADO',	7782,1982/06/23 ,	169000.00,	0.00,	10)
+exec Eliminar_Emp MU√ëOZ
+INSERT INTO Emp values (7934,	'MU√ëOZ',	'EMPLEADO',	7782,1982/06/23 ,	169000.00,	0.00,	10)
+
+--13 Crear un procedimiento que recupere el n√∫mero departamento, el nombre y n√∫mero de empleados, 
+--d√°ndole como valor el nombre del departamento, si el nombre introducido no es v√°lido,
+--mostraremos un mensaje informativo comunic√°ndolo.
+select * from Emp
+
+go
+create procedure Cant_Emp_xNombreDepto(
+@DNombre varchar (50)
+)
+as 
+begin
+		DECLARE @DeptNombre varchar (50)
+		set @DeptNombre=NULL
+		
+		select @DeptNombre = DNombre from Dept where DNombre= @DNombre
+
+		IF (@DeptNombre is null)
+		print 'El departamento ingresado no existe'
+
+		ELSE
+		begin
+		select d.DNombre as 'Departamento', e.Dept_No as 'Numero de Departamento',count (e.Emp_No) as 'Cantidad de empleados' from Emp e
+		inner join Dept d on e.Dept_No=d.Dept_No
+		where d.DNombre=@DNombre
+		group by d.DNombre,e.Dept_No
+		end
+
+end
+
+exec Cant_Emp_xNombreDepto CONTABILIDAD
+exec Cant_Emp_xNombreDepto LIMPIEZA
