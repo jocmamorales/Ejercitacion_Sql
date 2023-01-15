@@ -392,7 +392,6 @@ end
 select * from Emp
 exec Eliminar_Emp MUÑOZ
 INSERT INTO Emp values (7934,	'MUÑOZ',	'EMPLEADO',	7782,1982/06/23 ,	169000.00,	0.00,	10)
-
 --13 Crear un procedimiento que recupere el número departamento, el nombre y número de empleados, 
 --dándole como valor el nombre del departamento, si el nombre introducido no es válido,
 --mostraremos un mensaje informativo comunicándolo.
