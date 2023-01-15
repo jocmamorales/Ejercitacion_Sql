@@ -305,5 +305,91 @@ where Fecha_Alt like '%1981%'
 --Prueba
 exec empleados
 
+---9. Crear un procedimiento almacenado que permita insertar un nuevo
+--departamento.
+select * from Dept
+go
+create procedure Nuevo_Depto
+(@Dept_No int, 
+@DNombre varchar (50),
+@Loc varchar(50)
+)
+as
+begin
+		insert into Dept (Dept_No,DNombre,Loc)
+		values (@Dept_No,@DNombre,@Loc)
+end
 
+--OPCION 2
+go
+create procedure Nuevo_Depto
+(@Dept_No int, 
+@DNombre varchar (50),
+@Loc varchar(50)
+)
+as
+begin
+		insert into Dept values (@Dept_No,@DNombre,@Loc)
+end
+
+--solucion
+exec Nuevo_Depto 50,'SEGURIDAD','BUENOS AIRES'
+--ELIMINANDO FILA AGREGADA
+DELETE FROM Dept WHERE Dept_No=50
+
+
+--10. Crear un procedimiento que recupere el promedio de antiguedad de las personas por
+--cada departamento.
+select * from Emp
+-- primero obtengo la edad de cada empleado y su promedio agrupando por departamento
+select d.DNombre as Departamento, avg(DATEDIFF(year,e.Fecha_Alt,getdate())) as 'Promedio antiguedad' from Emp e 
+inner join   Dept d on d.Dept_No= e.Dept_No
+group by d.DNombre
+---luego creo el procedimiento
+go
+create procedure Prom_Emp_Antigue
+as
+begin
+select d.DNombre as Departamento, avg(DATEDIFF(year,e.Fecha_Alt,getdate())) as 'Promedio antiguedad' from Emp e 
+inner join   Dept d on d.Dept_No= e.Dept_No
+group by d.DNombre
+
+end 
+---prueba
+exec Prom_Emp_Antigue
+--11. Crear un procedimiento para devolver el apellido, oficio y salario, pasándole
+--como parámetro el número del empleado.
+select * from Emp
+
+-- solucion
+go
+create procedure Datos_Emple_Xnum
+(@Emp_No int
+)
+as
+begin
+	select e.Apellido,e.Oficio, e.Salario from Emp e 
+	where e.Emp_No=@Emp_No
+
+end
+
+--prueba
+exec Datos_Emple_Xnum 7119
+
+--12. Crear un procedimiento almacenado para dar de baja a un empleado
+---pasándole como parámetro su apellido
+go
+create procedure Eliminar_Emp
+(@Apellido varchar (50)
+)
+as
+begin
+	delete from Emp where Apellido= @Apellido
+
+end
+
+--prueba
+select * from Emp
+exec Eliminar_Emp MUÑOZ
+INSERT INTO Emp values (7934,	'MUÑOZ',	'EMPLEADO',	7782,1982/06/23 ,	169000.00,	0.00,	10)
 
