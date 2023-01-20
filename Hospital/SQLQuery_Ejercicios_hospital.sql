@@ -424,3 +424,60 @@ end
 
 exec Cant_Emp_xNombreDepto CONTABILIDAD
 exec Cant_Emp_xNombreDepto LIMPIEZA
+
+--14 Crear un procedimiento en el que pasaremos como parámetro el Apellido de un empleado. 
+--El procedimiento devolverá los subordinados del empleado escrito,
+--si el empleado no existe en la base de datos, informaremos de ello,
+--si el empleado no tiene subordinados, lo informaremos con un mensaje y mostraremos su jefe. 
+--Mostrar el número de empleado, Apellido, Oficio y Departamento de los subordinados.
+GO
+CREATE PROCEDURE JEFES
+@APE NVARCHAR(30)
+AS
+DECLARE @EMP INT, @JEFE INT, @SUB INT
+SELECT @EMP = EMP_NO FROM EMP
+WHERE APELLIDO = @APE
+IF (@EMP IS NULL)
+BEGIN
+PRINT 'NO EXISTE NINGUN EMPLEADO CON ESTE APELLIDO: ' + @APE
+END
+ELSE
+BEGIN
+SELECT @JEFE = A.EMP_NO
+,@SUB = B.EMP_NO
+FROM EMP AS A INNER JOIN EMP AS B
+ON A.EMP_NO = B.DIR
+WHERE B.DIR = @EMP
+ORDER BY B.DIR
+IF (@JEFE IS NULL)
+BEGIN
+SELECT A.EMP_NO AS 'Nº DE EMPLEADO'
+,A.APELLIDO AS 'JEFE', A.OFICIO
+,A.DEPT_NO AS 'Nº DEPARTAMENTO'
+,B.EMP_NO AS 'Nº EMPLEADO'
+,B.APELLIDO AS 'SUBORDINADO'
+,B.OFICIO
+,B.DEPT_NO AS 'Nº DEPARTAMENTO'
+FROM EMP AS A
+INNER JOIN EMP AS B
+ON B.DIR = A.EMP_NO
+WHERE B.EMP_NO = @EMP
+ORDER BY B.DIR
+END
+ELSE
+BEGIN
+SELECT A.EMP_NO AS 'Nº DE EMPLEADO'
+,A.APELLIDO AS JEFE, A.OFICIO
+,A.DEPT_NO AS 'Nº DEPARTAMENTO'
+,B.EMP_NO AS 'Nº EMPLEADO'
+,B.APELLIDO AS 'SUBORDINADO'
+,B.OFICIO
+,B.DEPT_NO AS 'Nº DEPARTAMENTO'
+FROM EMP AS A INNER JOIN EMP AS B
+ON A.EMP_NO = B.DIR
+WHERE B.DIR = @EMP
+ORDER BY B.DIR
+END
+END
+---prueba
+exec JEFES 'rey'
