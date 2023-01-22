@@ -544,3 +544,215 @@ end
 
 DELETE FROM HOSPITAL WHERE HOSPITAL_COD = 45
 
+--4 Crear un Trigger para controlar la inserción de "empleados", 
+--cuando insertemos un "empleado" 
+--se copiarán datos sobre la inserción en una tabla llamada Control_BD. 
+--Los datos que se copiarán son:
+--el Número de empleado, 
+--El usuario que está realizando la operación, 
+--la fecha y el tipo de operación. 
+
+GO
+CREATE TABLE CONTROL_BD(
+NumeroEmpleado INT NULL,
+Usuario VARCHAR(50) NULL, 
+Fecha DATETIME NULL,
+TipoOperacion VARCHAR(15) NULL
+)
+
+GO
+ALTER TRIGGER tr_NUEVO_EMP ON EMP
+FOR INSERT
+AS
+BEGIN
+    INSERT INTO CONTROL_BD (NumeroEmpleado, Usuario, Fecha, TipoOperacion)
+    SELECT INSERTED.Emp_No, USER_NAME(), GETDATE(), 'INSERT'
+    FROM inserted
+END
+GO
+
+
+SELECT * FROM CONTROL_BD
+
+
+INSERT INTO EMP(EMP_NO, APELLIDO, OFICIO, DIR, FECHA_ALT, SALARIO, COMISION, DEPT_NO)
+VALUES(7456,'GANOZ','EMPLEADO',7903,'29/05/2018',1552,0,20)
+
+--5 Crear un Trigger que actue cuando se modifique la tabla hospital 
+--y sobre todas las tablas con las que esté relacionadas.
+GO
+CREATE TRIGGER TR_MOD_HOSP ON HOSPITAL
+FOR 
+UPDATE
+AS 
+BEGIN
+	UPDATE Doctor
+	SET Hospital_Cod = i.Hospital_Cod
+	FROM Doctor d
+	JOIN inserted i ON i.Hospital_Cod = d.Hospital_Cod
+
+	UPDATE Sala
+	SET Hospital_Cod = i.Hospital_Cod
+	FROM Sala S
+	JOIN inserted i ON i.Hospital_Cod = s.Hospital_Cod
+
+	UPDATE Plantilla
+	SET Hospital_Cod= i.Hospital_Cod
+	FROM Plantilla p
+	JOIN inserted i ON i.Hospital_Cod = p.Hospital_Cod
+
+
+END
+---prueba
+UPDATE HOSPITAL SET HOSPITAL_COD = 90 WHERE HOSPITAL_COD = 18
+---------
+CREATE TRIGGER MODIFHOSPITAL ON HOSPITAL
+FOR UPDATE
+AS
+UPDATE PLANTILLA
+SET HOSPITAL_COD = INSERTED.HOSPITAL_COD
+FROM PLANTILLA, INSERTED, DELETED
+WHERE PLANTILLA.HOSPITAL_COD = DELETED.HOSPITAL_COD
+UPDATE SALA
+SET HOSPITAL_COD = INSERTED.HOSPITAL_COD
+FROM PLANTILLA, INSERTED, DELETED
+WHERE SALA.HOSPITAL_COD = DELETED.HOSPITAL_COD
+UPDATE DOCTOR
+SET HOSPITAL_COD = INSERTED.HOSPITAL_COD
+FROM DOCTOR, INSERTED, DELETED
+WHERE DOCTOR.HOSPITAL_COD = DELETED.HOSPITAL_COD
+
+UPDATE HOSPITAL SET HOSPITAL_COD = 90 WHERE HOSPITAL_COD = 18
+
+--6 Crear un Trigger en la tabla plantilla. 
+--Cuando actualicemos la tabla plantilla, 
+--debemos comprobar que el hospital que actualizamos existe,
+--si intentamos actualizar el código de hospital, no podremos hacerlo si no existe relación con algún código de hospital. Realizar el mismo Trigger para las tablas relacionadas con Hospital.
+go
+alter TRIGGER tr_UpdatePlantilla ON Plantilla
+FOR UPDATE
+AS
+		IF NOT EXISTS (SELECT * FROM Hospital WHERE Hospital_Cod = (SELECT Hospital_Cod FROM inserted))
+		BEGIN
+			RAISERROR('El hospital relacionado no existe', 16, 1)
+			UPDATE PLANTILLA SET HOSPITAL_COD = D.HOSPITAL_COD
+			FROM PLANTILLA AS H
+			, INSERTED AS I
+			, DELETED AS D
+			WHERE H.HOSPITAL_COD = I.HOSPITAL_COD
+END
+
+UPDATE PLANTILLA SET HOSPITAL_COD = 140 WHERE EMPLEADO_NO = 1009
+---
+CREATE TRIGGER ACTUALIZARPLANTILLA ON PLANTILLA
+FOR UPDATE
+AS
+DECLARE @HOSPITAL INT
+SELECT @HOSPITAL = I.HOSPITAL_COD
+FROM HOSPITAL AS H
+INNER JOIN INSERTED AS I
+ON H.HOSPITAL_COD = I.HOSPITAL_COD
+IF (@HOSPITAL IS NULL)
+BEGIN
+PRINT 'NO EXISTE EL CODIGO DE HOSPITAL'
+UPDATE PLANTILLA SET HOSPITAL_COD = D.HOSPITAL_COD
+FROM PLANTILLA AS H
+, INSERTED AS I
+, DELETED AS D
+WHERE H.HOSPITAL_COD = I.HOSPITAL_COD
+END
+ELSE
+PRINT 'EXISTE EL CODIGO EN EL HOSPITAL'
+
+UPDATE PLANTILLA SET HOSPITAL_COD = 140 WHERE EMPLEADO_NO = 1009
+--7 Modificar el Trigger del ejercicio 4, 
+--utilizando transacciones y control de errores, si la operación es correcta, 
+--mostrará un mensaje positivo, si la operación no es correcta mostrará el error
+--y un mensaje que indique que no se ha llevado a cabo la operación.
+GO
+ALTER TRIGGER tr_NUEVO_EMP ON EMP
+FOR INSERT
+AS
+declare @ERROR INT
+BEGIN TRANSACTION 
+	
+    INSERT INTO CONTROL_BD (NumeroEmpleado, Usuario, Fecha, TipoOperacion)
+    SELECT INSERTED.Emp_No, USER_NAME(), GETDATE(), 'INSERT'
+    FROM inserted
+
+	SET @ERROR= @@ERROR
+	IF(@ERROR <> 0)
+	BEGIN 
+	ROLLBACK TRANSACTION
+	PRINT 'Existe uun error en el trigger Numero de error'
+	Print @@error
+	end
+	else
+	begin
+	commit transaction
+	print 'el empleado se agrego correctamente'
+end
+
+--prueba
+INSERT INTO EMP(EMP_NO, APELLIDO, OFICIO, DIR, FECHA_ALT, SALARIO, COMISION, DEPT_NO)
+VALUES(8741,'ZEGARRA','EMPLEADO',7902,'30/05/2015',15520,0,20)
+
+select * from Emp
+--8 Crear un trigger que guarde los datos en la tabla controltrigger 
+--cuando se realice la baja de un empleado.
+go
+create table ControlTrigger(
+Emp_No int null,
+Apellido varchar (50) null, 
+fechaBaja datetime null,
+Operacion varchar (50) null
+)
+drop table ControlTrigger
+
+go
+alter TRIGGER tr_Baja 
+ON Emp
+AFTER DELETE 
+AS 
+BEGIN
+    DECLARE @Emp_No INT, @Apellido VARCHAR(50), @fechaBaja DATETIME
+    SELECT @Emp_No = deleted.Emp_No, @Apellido = deleted.Apellido, @fechaBaja = GETDATE()
+    FROM deleted
+    INSERT INTO ControlTrigger (Emp_No, Apellido, fechaBaja, Operacion) 
+    VALUES (@Emp_No, @Apellido, @fechaBaja,'BAJA')
+END
+---PRUEBA
+DELETE FROM EMP WHERE EMP_NO = 8741
+
+SELECT * FROM ControlTrigger
+
+--9 Crear un Trigger que guarde los datos en la tabla ControlTrigger 
+--cuando se relice una modificación en un empleado. 
+--Guardar la hora de la actualización en un campo aparte en la tabla ControlTrigger. (Añadir un campo)
+ALTER TABLE ControlTrigger add HORA_ACTUALIZACION VARCHAR(10)
+GO
+---
+CREATE TRIGGER MOD_EMP
+ON EMP
+FOR UPDATE
+AS
+
+		DECLARE @HORA VARCHAR(10)
+		SET @HORA = CONVERT(CHAR(2),DATEPART(HH, GETDATE())) + ':'
+		+ CONVERT(CHAR(2),DATEPART(MI,GETDATE()))
+		+ ':' + CONVERT(CHAR(2),DATEPART(SS,GETDATE()))
+
+		INSERT INTO ControlTrigger (Emp_No, Apellido, fechaBaja, Operacion, HORA_ACTUALIZACION) 
+		SELECT deleted.Emp_No, USER_NAME(), GETDATE(),'MODIFICACION', @HORA 
+		FROM DELETED, INSERTED
+		WHERE deleted.Emp_No=inserted.Emp_No
+
+UPDATE EMP SET APELLIDO = 'morale' WHERE EMP_NO = 8743
+SELECT * FROM ControlTrigger
+--10) Listar todos los triggers de la base Hospital. Borrar todos los Triggers creados después de haber sido probados.
+
+USE Hospital
+SELECT * FROM sys.triggers
+GO
+
+drop trigger tr_Baja
