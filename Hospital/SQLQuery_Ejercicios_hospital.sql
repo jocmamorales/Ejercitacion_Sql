@@ -481,3 +481,66 @@ END
 END
 ---prueba
 exec JEFES 'rey'
+
+---Ejercicios con Triggers en SQL Server
+
+--1 Crear un Trigger que borre en cascada sobre la tabla relacionada cuando borremos una sala. 
+--Mostrar el registro borrado al ejecutar el Trigger.
+CREATE TRIGGER tr_BorrarSala ON Sala
+FOR DELETE
+AS
+BEGIN
+    DELETE from Plantilla from Sala, 
+    deleted 
+	where sala.Sala_Cod = deleted.Sala_Cod
+    SELECT * FROM deleted
+END
+GO
+--prueba
+DELETE FROM SALA WHERE SALA_COD = 1
+--borro el trigger 
+drop trigger tr_BorrarSala
+
+--2 Crear un Trigger que se active cuando Actualicemos alguna sala del hospital, 
+--modificando sus tablas relacionadas. Mostrar el registro Actualizado. 
+go
+Alter TRIGGER tr_ModificaSala ON Sala
+FOR UPDATE
+AS
+BEGIN
+    UPDATE Plantilla
+    SET Sala_Cod = i.Sala_Cod
+    FROM Plantilla p, inserted i, deleted d
+	where p.Sala_Cod= d.Sala_Cod
+    select * from inserted
+	    
+END
+GO
+
+UPDATE SALA SET SALA_COD = 8 WHERE SALA_COD = 2
+
+
+--3 Crear un Trigger que se active al eliminar un registro en la tabla hospital y
+--modifique las tablas correspondientes.
+go
+alter trigger Tr_Eliminar on hospital 
+for delete
+as
+begin 
+		delete sala
+		from sala
+		join deleted on deleted.Hospital_Cod= Sala.Hospital_Cod
+
+		delete Plantilla
+		from Plantilla
+		join deleted on deleted.Hospital_Cod=Plantilla.Hospital_Cod
+		
+
+		delete Doctor
+		from Doctor
+		join deleted on deleted.Hospital_Cod=Doctor.Hospital_Cod
+		select * from deleted
+end
+
+DELETE FROM HOSPITAL WHERE HOSPITAL_COD = 45
+
